@@ -1,0 +1,18 @@
+services:
+  database:
+    container_name: postgres
+    image: postgres:15.1
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - cta_storage_volume:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:5432
+
+
+
+volumes:
+  cta_storage_volume:
