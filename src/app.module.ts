@@ -7,9 +7,10 @@ import { GlobalExceptionsFilter } from 'shared/filters';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BanksModule } from './modules/banks/banks.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 
 @Module({
-  imports: [MikroOrmModule.forRoot(ormConfig), UsersModule, AuthModule, BanksModule],
+  imports: [MikroOrmModule.forRoot(ormConfig), UsersModule, AuthModule, BanksModule, TransactionsModule],
   providers: [
     {
       provide: APP_FILTER,

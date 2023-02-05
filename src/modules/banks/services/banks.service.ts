@@ -1,11 +1,12 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
+import { Nullable } from 'shared/types';
 import { Bank, BankInput } from '../interfaces';
 import { BankEntity } from '../entities';
 import { UserEntity } from 'src/modules/users/entities';
-import { Nullable } from 'shared/types';
+import { TransactionsService } from 'src/modules/transactions/services';
 
 @Injectable()
 export class BanksService {
@@ -14,6 +15,7 @@ export class BanksService {
   public constructor(
     @InjectRepository(BankEntity)
     private readonly banksRepository: EntityRepository<BankEntity>,
+    private readonly transactionsService: TransactionsService,
   ) {}
 
   public async createBank(input: BankInput): Promise<Bank> {
@@ -75,10 +77,25 @@ export class BanksService {
     };
   }
 
+  public async changeBalance(bank: BankEntity, amount: number): Promise<void> {
+    this.logger.debug(`Changing balance of bank: ${bank.bankId}`);
+
+    // TODO: convert to BigInt
+    bank.assign({
+      balance: Number(bank.balance) + amount,
+    });
+
+    await this.banksRepository.flush();
+  }
+
   public async deleteBank(bankId: number, user: UserEntity): Promise<Partial<Bank>> {
     this.logger.debug(`Deleting bank: ${bankId}`);
 
     const bank = await this.findOne(bankId, user);
+
+    const transactions = await this.transactionsService.findTransactions({ bankId });
+
+    if (transactions) throw new BadRequestException(`Bank with transaction can't be deleted`);
 
     if (!bank) throw new NotFoundException(`No such bank`);
 
