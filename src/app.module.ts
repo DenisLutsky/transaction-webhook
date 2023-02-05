@@ -6,9 +6,10 @@ import ormConfig from 'configs/orm.config';
 import { GlobalExceptionsFilter } from 'shared/filters';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { BanksModule } from './modules/banks/banks.module';
 
 @Module({
-  imports: [MikroOrmModule.forRoot(ormConfig), UsersModule, AuthModule],
+  imports: [MikroOrmModule.forRoot(ormConfig), UsersModule, AuthModule, BanksModule],
   providers: [
     {
       provide: APP_FILTER,
