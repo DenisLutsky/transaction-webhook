@@ -1,8 +1,10 @@
 import {
   BaseEntity,
+  Collection,
   Entity,
   Enum,
   IdentifiedReference,
+  ManyToMany,
   ManyToOne,
   OptionalProps,
   PrimaryKey,
@@ -12,6 +14,7 @@ import {
 import { TransactionTypes } from '../enums';
 import { BankEntity } from 'src/modules/banks/entities';
 import { UserEntity } from 'src/modules/users/entities';
+import { CategoryEntity } from './category.entity';
 
 @Entity({ tableName: 'transactions' })
 export class TransactionEntity extends BaseEntity<TransactionEntity, 'transactionId'> {
@@ -29,6 +32,9 @@ export class TransactionEntity extends BaseEntity<TransactionEntity, 'transactio
 
   @ManyToOne(() => UserEntity, { joinColumn: 'userId', wrappedReference: true })
   public user!: IdentifiedReference<UserEntity, 'userId'>;
+
+  @ManyToMany(() => CategoryEntity, 'transactions', { owner: true, pivotTable: 'transactions_to_categories' })
+  public categories!: Collection<CategoryEntity>;
 
   @Property({ columnType: 'boolean', default: false })
   public isDeleted!: boolean;
