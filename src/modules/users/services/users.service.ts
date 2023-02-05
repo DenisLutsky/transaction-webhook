@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EntityRepository, FilterQuery } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/core';
 
 import { hashPassword } from 'shared/utils/password';
-import { UserInput } from '../interfaces';
+import { User, UserInput } from '../interfaces';
 import { UserEntity } from '../entities';
 
 @Injectable()
@@ -20,6 +20,7 @@ export class UsersService {
 
     const hash = await hashPassword(input.password);
 
+    // TODO: handle duplicate
     const user = this.usersRepository.create({
       email: input.email,
       password: hash,
@@ -28,5 +29,11 @@ export class UsersService {
     await this.usersRepository.persistAndFlush(user);
 
     return user;
+  }
+
+  public async findOne(input: Partial<User>): Promise<UserEntity> {
+    const filter: FilterQuery<UserEntity> = { ...input };
+
+    return await this.usersRepository.findOne(filter);
   }
 }

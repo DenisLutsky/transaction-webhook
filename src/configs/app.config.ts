@@ -3,6 +3,7 @@ import 'dotenv/config';
 const config = {
   app: {
     port: process.env.PORT || 3000,
+    secret: process.env.JWT_SECRET || 'secret',
   },
   database: {
     host: process.env.DB_HOST || '127.0.0.1',

@@ -7,8 +7,13 @@ import { AuthService } from '../services';
 export class AuthController {
   public constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  public async create(@Body() input: RegisterDto): Promise<any> {
-    return this.authService.create(input);
+  @Post('sign-up')
+  public async signUp(@Body() input: RegisterDto): Promise<string> {
+    return await this.authService.register(input);
+  }
+
+  @Post('sign-in')
+  public async signIn(@Body() input: RegisterDto): Promise<string> {
+    return await this.authService.login(input);
   }
 }
