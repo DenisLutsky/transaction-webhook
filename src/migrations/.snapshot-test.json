@@ -184,6 +184,132 @@
           "updateRule": "cascade"
         }
       }
+    },
+    {
+      "columns": {
+        "transactionId": {
+          "name": "transactionId",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "bigint",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "bigint"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "enumItems": [
+            "profitable",
+            "consumable"
+          ],
+          "mappedType": "enum"
+        },
+        "bankId": {
+          "name": "bankId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "isDeleted": {
+          "name": "isDeleted",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "current_timestamp",
+          "mappedType": "datetime"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "current_timestamp",
+          "extra": "on update current_timestamp",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "transactions",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "transactions_pkey",
+          "columnNames": [
+            "transactionId"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "transactions_bankId_foreign": {
+          "constraintName": "transactions_bankId_foreign",
+          "columnNames": [
+            "bankId"
+          ],
+          "localTableName": "public.transactions",
+          "referencedColumnNames": [
+            "bankId"
+          ],
+          "referencedTableName": "public.banks",
+          "updateRule": "cascade"
+        },
+        "transactions_userId_foreign": {
+          "constraintName": "transactions_userId_foreign",
+          "columnNames": [
+            "userId"
+          ],
+          "localTableName": "public.transactions",
+          "referencedColumnNames": [
+            "userId"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        }
+      }
     }
   ]
 }
