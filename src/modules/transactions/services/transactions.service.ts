@@ -59,6 +59,31 @@ export class TransactionsService {
     return await this.transactionsRepository.find(filter);
   }
 
+  // TODO: redo and rename
+  public async findTransactionsByDate(input: Partial<TransactionInput>): Promise<TransactionEntity[]> {
+    this.logger.debug(`Searching for transactions by date`);
+
+    const { categories, isDeleted, fromPeriod, toPeriod } = input;
+
+    let filter: FilterQuery<TransactionEntity> = {};
+
+    const createdAt =
+      fromPeriod && toPeriod
+        ? {
+            $gte: fromPeriod,
+            $lte: toPeriod,
+          }
+        : undefined;
+
+    filter = {
+      categories,
+      isDeleted: isDeleted || false,
+      createdAt,
+    };
+
+    return await this.transactionsRepository.find(filter, { populate: true });
+  }
+
   public async findAllTransactionsForUser(
     user: UserEntity,
     pagination: Pagination,

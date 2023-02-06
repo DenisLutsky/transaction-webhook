@@ -8,9 +8,10 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BanksModule } from './modules/banks/banks.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
 
 @Module({
-  imports: [MikroOrmModule.forRoot(ormConfig), UsersModule, AuthModule, BanksModule, TransactionsModule],
+  imports: [MikroOrmModule.forRoot(ormConfig), UsersModule, AuthModule, BanksModule, TransactionsModule, StatisticsModule],
   providers: [
     {
       provide: APP_FILTER,
