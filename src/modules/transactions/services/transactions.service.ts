@@ -4,12 +4,13 @@ import { EntityRepository, FilterQuery, QueryFlag, QueryOrder } from '@mikro-orm
 import { InjectRepository } from '@mikro-orm/nestjs';
 
 import { Events } from 'shared/enums';
+import { TransactionTypes } from '../enums';
 import { PaginatedResult, Pagination } from 'shared/interfaces';
 import { TransactionInput } from '../interfaces';
 import { TransactionEntity } from '../entities';
+import { CategoryService } from './category.service';
 import { BanksService } from 'src/modules/banks/services';
 import { UserEntity } from 'src/modules/users/entities';
-import { TransactionTypes } from '../enums';
 import { TransactionEventPayload } from 'src/modules/webhooks/interfaces';
 
 @Injectable()
@@ -21,6 +22,8 @@ export class TransactionsService {
     private readonly transactionsRepository: EntityRepository<TransactionEntity>,
     @Inject(forwardRef(() => BanksService))
     private readonly banksService: BanksService,
+    @Inject(forwardRef(() => CategoryService))
+    private readonly categoryService: CategoryService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -56,7 +59,10 @@ export class TransactionsService {
   private async findOneById(transactionId: number, user: UserEntity): Promise<TransactionEntity> {
     this.logger.debug(`Searching for a transaction with id: ${transactionId}`);
 
-    const transaction = await this.transactionsRepository.findOne({ transactionId, user, isDeleted: false });
+    const transaction = await this.transactionsRepository.findOne(
+      { transactionId, user, isDeleted: false },
+      { populate: true },
+    );
 
     if (!transaction) throw new NotFoundException(`No such transaction`);
 
@@ -114,6 +120,22 @@ export class TransactionsService {
       rows: transactions,
       count: transactions.length,
     };
+  }
+
+  // FIXME: should not be here
+  public async assignCategories(transactionId: number, categoryIds: number[], user: UserEntity): Promise<void> {
+    this.logger.debug(`Assigning categories to: ${transactionId}`);
+
+    const transaction = await this.findOneById(transactionId, user);
+    const transactionCategories = transaction.categories.getItems();
+
+    const categories = await this.categoryService.findManyCategories(categoryIds);
+
+    transaction.assign({
+      categories: [...transactionCategories, ...categories],
+    });
+
+    await this.transactionsRepository.flush();
   }
 
   public async deleteTransaction(transactionId: number, user: UserEntity): Promise<void> {

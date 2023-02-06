@@ -1,9 +1,9 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Delete, Param, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Delete, Param, Query, Patch } from '@nestjs/common';
 
 import { AuthGuard } from 'shared/guards';
 import { CustomRequest, PaginatedResult, Pagination } from 'shared/interfaces';
 import { Transaction } from '../interfaces';
-import { CreateTransactionDto } from '../dto';
+import { AssignCategoriesDto, CreateTransactionDto } from '../dto';
 import { TransactionsService } from '../services';
 
 @UseGuards(AuthGuard)
@@ -25,6 +25,15 @@ export class TransactionsController {
     @Query() pagination: Pagination,
   ): Promise<PaginatedResult<Transaction>> {
     return await this.transactionsService.findAllTransactionsForUser(user, pagination);
+  }
+
+  @Patch(':id')
+  public async assignCategories(
+    @Req() { user }: CustomRequest,
+    @Body() input: AssignCategoriesDto,
+    @Param('id') transactionId: string,
+  ): Promise<void> {
+    return await this.transactionsService.assignCategories(+transactionId, input.categoryIds, user);
   }
 
   @Delete(':id')
