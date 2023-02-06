@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { Statistics, StatisticsFilter } from '../interfaces';
 import { TransactionsService } from 'src/modules/transactions/services';
+import { UserEntity } from 'src/modules/users/entities';
 
 @Injectable()
 export class StatisticsService {
@@ -9,14 +10,21 @@ export class StatisticsService {
 
   public constructor(private readonly transactionsService: TransactionsService) {}
 
-  public async getStatistics(filter: StatisticsFilter): Promise<Statistics> {
+  public async getStatistics(filter: StatisticsFilter, user: UserEntity): Promise<Statistics> {
     this.logger.debug(`Getting statistics for categories: ${filter.categoryIds.join(', ')}`);
 
     const { categoryIds, fromPeriod, toPeriod } = filter;
 
     const categories = categoryIds.map((id) => ({ categoryId: id }));
 
-    const transactions = await this.transactionsService.findTransactionsByDate({ categories, fromPeriod, toPeriod });
+    const transactions = await this.transactionsService.findTransactionsByDate(
+      {
+        categories,
+        fromPeriod,
+        toPeriod,
+      },
+      user,
+    );
 
     const statistics: Statistics = {};
 
