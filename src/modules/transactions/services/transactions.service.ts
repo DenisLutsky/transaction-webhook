@@ -76,7 +76,10 @@ export class TransactionsService {
   }
 
   // TODO: redo and rename
-  public async findTransactionsByDate(input: Partial<TransactionInput>): Promise<TransactionEntity[]> {
+  public async findTransactionsByDate(
+    input: Partial<TransactionInput>,
+    user: UserEntity,
+  ): Promise<TransactionEntity[]> {
     this.logger.debug(`Searching for transactions by date`);
 
     const { categories, isDeleted, fromPeriod, toPeriod } = input;
@@ -95,6 +98,7 @@ export class TransactionsService {
       categories,
       isDeleted: isDeleted || false,
       createdAt,
+      user,
     };
 
     return await this.transactionsRepository.find(filter, { populate: true });
