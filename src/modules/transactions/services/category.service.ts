@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 
@@ -14,6 +14,7 @@ export class CategoryService {
   public constructor(
     @InjectRepository(CategoryEntity)
     private readonly categoryRepository: EntityRepository<CategoryEntity>,
+    @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
   ) {}
 
@@ -44,6 +45,13 @@ export class CategoryService {
     this.logger.debug(`Searching for all category of user: ${user.userId}`);
 
     return await this.categoryRepository.find({ user, isDeleted: false });
+  }
+
+  // TODO: redo
+  public async findManyCategories(categoryIds: number[]): Promise<CategoryEntity[]> {
+    this.logger.debug(`Searching for many categories`);
+
+    return await this.categoryRepository.find({ categoryId: { $in: categoryIds }, isDeleted: false });
   }
 
   public async updateCategory(
