@@ -8,7 +8,11 @@ import { AppModule } from './app.module';
     cors: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   app.setGlobalPrefix('api');
 
