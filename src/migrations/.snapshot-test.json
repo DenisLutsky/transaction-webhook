@@ -467,6 +467,98 @@
           "updateRule": "cascade"
         }
       }
+    },
+    {
+      "columns": {
+        "webhookId": {
+          "name": "webhookId",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "true",
+          "mappedType": "boolean"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "current_timestamp",
+          "mappedType": "datetime"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "current_timestamp",
+          "extra": "on update current_timestamp",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "webhooks",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "webhooks_pkey",
+          "columnNames": [
+            "webhookId"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "webhooks_userId_foreign": {
+          "constraintName": "webhooks_userId_foreign",
+          "columnNames": [
+            "userId"
+          ],
+          "localTableName": "public.webhooks",
+          "referencedColumnNames": [
+            "userId"
+          ],
+          "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        }
+      }
     }
   ]
 }

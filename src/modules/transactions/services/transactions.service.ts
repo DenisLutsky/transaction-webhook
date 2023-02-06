@@ -1,13 +1,16 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EntityRepository, FilterQuery, QueryFlag, QueryOrder } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 
+import { Events } from 'shared/enums';
 import { PaginatedResult, Pagination } from 'shared/interfaces';
 import { TransactionInput } from '../interfaces';
 import { TransactionEntity } from '../entities';
 import { BanksService } from 'src/modules/banks/services';
 import { UserEntity } from 'src/modules/users/entities';
 import { TransactionTypes } from '../enums';
+import { TransactionEventPayload } from 'src/modules/webhooks/interfaces';
 
 @Injectable()
 export class TransactionsService {
@@ -18,6 +21,7 @@ export class TransactionsService {
     private readonly transactionsRepository: EntityRepository<TransactionEntity>,
     @Inject(forwardRef(() => BanksService))
     private readonly banksService: BanksService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async createTransaction(input: TransactionInput, user: UserEntity): Promise<TransactionEntity> {
@@ -39,6 +43,12 @@ export class TransactionsService {
     this.transactionsRepository.persist(transaction);
 
     await this.banksService.changeBalance(bank, amount);
+
+    this.eventEmitter.emit(Events.TRANSACTION_CREATED, {
+      transactionId: transaction.transactionId,
+      userId: user.userId,
+      createdAt: transaction.createdAt,
+    } as TransactionEventPayload);
 
     return transaction;
   }
